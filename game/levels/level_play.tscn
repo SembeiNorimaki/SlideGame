@@ -1,0 +1,112 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://game/levels/level_play.gd" id="1_lp"]
+[ext_resource type="Script" path="res://shared/ui/widgets/guess_input/guess_input.gd" id="2_gi"]
+
+[node name="LevelPlay" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_lp")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.09, 0.1, 0.14, 1)
+
+[node name="Layout" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="TopBar" type="MarginContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/margin_top = 48
+theme_override_constants/margin_bottom = 24
+
+[node name="LevelLabel" type="Label" parent="Layout/TopBar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "Level 1"
+horizontal_alignment = 1
+
+[node name="Track" type="Control" parent="Layout"]
+unique_name_in_owner = true
+clip_contents = true
+custom_minimum_size = Vector2(0, 420)
+layout_mode = 2
+
+[node name="Shape" type="TextureRect" parent="Layout/Track"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_right = 256.0
+offset_bottom = 256.0
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LeftCover" type="ColorRect" parent="Layout/Track"]
+unique_name_in_owner = true
+layout_mode = 0
+mouse_filter = 2
+
+[node name="RightCover" type="ColorRect" parent="Layout/Track"]
+unique_name_in_owner = true
+layout_mode = 0
+mouse_filter = 2
+
+[node name="GuessArea" type="MarginContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 32
+
+[node name="GuessInput" type="Control" parent="Layout/GuessArea"]
+unique_name_in_owner = true
+layout_mode = 2
+script = ExtResource("2_gi")
+
+[node name="Feedback" type="Label" parent="Layout"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+theme_override_font_sizes/font_size = 34
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SubmitArea" type="MarginContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/margin_left = 160
+theme_override_constants/margin_right = 160
+
+[node name="SubmitButton" type="Button" parent="Layout/SubmitArea"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Submit"
+
+[node name="Spacer" type="Control" parent="Layout"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="BottomBar" type="MarginContainer" parent="Layout"]
+layout_mode = 2
+theme_override_constants/margin_left = 160
+theme_override_constants/margin_right = 160
+theme_override_constants/margin_bottom = 64
+
+[node name="ExitButton" type="Button" parent="Layout/BottomBar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Give up"

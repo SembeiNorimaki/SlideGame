@@ -1,0 +1,30 @@
+{
+  "levels": [
+    {"atlas_coords": [0, 0], "solution": "hello"},
+    {"atlas_coords": [1, 0], "solution": "B"},
+    {"atlas_coords": [2, 0], "solution": "C"},
+    {"atlas_coords": [3, 0], "solution": "D"},
+    {"atlas_coords": [4, 0], "solution": "E"},
+    {"atlas_coords": [0, 1], "solution": "F"},
+    {"atlas_coords": [1, 1], "solution": "G"},
+    {"atlas_coords": [2, 1], "solution": "H"},
+    {"atlas_coords": [3, 1], "solution": "I"},
+    {"atlas_coords": [4, 1], "solution": "J"},
+    {"atlas_coords": [0, 2], "solution": "K"},
+    {"atlas_coords": [1, 2], "solution": "L"},
+    {"atlas_coords": [2, 2], "solution": "M"},
+    {"atlas_coords": [3, 2], "solution": "N"},
+    {"atlas_coords": [4, 2], "solution": "O"},
+    {"atlas_coords": [0, 3], "solution": "P"},
+    {"atlas_coords": [1, 3], "solution": "Q"},
+    {"atlas_coords": [2, 3], "solution": "R"},
+    {"atlas_coords": [3, 3], "solution": "S"},
+    {"atlas_coords": [4, 3], "solution": "T"},
+    {"atlas_coords": [0, 4], "solution": "U"},
+    {"atlas_coords": [1, 4], "solution": "V"},
+    {"atlas_coords": [2, 4], "solution": "W"},
+    {"atlas_coords": [3, 4], "solution": "X"},
+    {"atlas_coords": [4, 4], "solution": "Y"},
+    {"atlas_coords": [0, 5], "solution": "Z"}
+  ]
+}
