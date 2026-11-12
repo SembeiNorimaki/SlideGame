@@ -1,35 +1,50 @@
 extends Node
-## Autoload "GameData": loads the level definitions and the player's
-## progress once, when the game starts.
+## Autoload "GameData": loads every level set (sets.json + one levels file
+## per set) and each set's progress when the game starts, and decides which
+## sets are unlocked.
 
-const LEVELS_PATH := "res://game/data/levels.json"
-const PROGRESS_PATH := "user://progress.json"
+const SETS_PATH := "res://game/data/sets.json"
 
-var levels: Array[LevelInfo] = []
-var progress: LevelProgress
+var sets: Array[GameSet] = []
+## In-app product id of the "full game" unlock, as created in the Play Console.
+var full_game_product_id := ""
 
 
 func _ready() -> void:
-	levels = _load_levels(LEVELS_PATH)
-	progress = LevelProgress.new(levels.size(), PROGRESS_PATH)
+	var data = JSON.parse_string(FileAccess.get_file_as_string(SETS_PATH))
+	if not data is Dictionary or not data.get("sets") is Array:
+		push_error("Invalid or missing %s" % SETS_PATH)
+		return
+	full_game_product_id = str(data.get("full_game_product_id", ""))
+	for d in data["sets"]:
+		sets.append(GameSet.from_dict(d))
+	if full_game_product_id != "":
+		Store.register_products([full_game_product_id])
 
 
-func level(number: int) -> LevelInfo:
-	return levels[number - 1]
+func get_set(id: String) -> GameSet:
+	for s in sets:
+		if s.id == id:
+			return s
+	push_error("Unknown set: %s" % id)
+	return null
 
 
-func level_count() -> int:
-	return levels.size()
+func owns_full_game() -> bool:
+	return Store.is_owned(full_game_product_id)
 
 
-static func _load_levels(path: String) -> Array[LevelInfo]:
-	var result: Array[LevelInfo] = []
-	var data = JSON.parse_string(FileAccess.get_file_as_string(path))
-	if not data is Dictionary or not data.get("levels") is Array:
-		push_error("Invalid or missing levels file: %s" % path)
-		return result
-	var i := 1
-	for entry in data["levels"]:
-		result.append(LevelInfo.from_dict(i, entry))
-		i += 1
-	return result
+func is_unlocked(game_set: GameSet) -> bool:
+	return game_set.free or owns_full_game()
+
+
+func has_progress() -> bool:
+	for s in sets:
+		if s.progress.has_progress():
+			return true
+	return false
+
+
+func reset_progress() -> void:
+	for s in sets:
+		s.progress.reset()

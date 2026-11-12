@@ -1,6 +1,6 @@
 class_name LevelInfo
 extends RefCounted
-## One entry of levels.json.
+## One level of a set (an entry of game/data/sets/<set>.json).
 
 var number: int            ## 1-based level number (position in the file)
 var atlas_coords: Vector2i ## cell in the shapes atlas: (column, row)

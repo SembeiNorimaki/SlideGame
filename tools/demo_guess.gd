@@ -7,11 +7,11 @@ var main: Node
 
 
 func _ready() -> void:
-	GameData.progress.reset()
+	GameData.reset_progress()
 	main = load("res://game/main.tscn").instantiate()
 	add_child(main)
 	await _wait(0.1)
-	main.start_level(1)
+	main.start_level("letters", 1)
 	var play: Control = main._current
 	play.debug_see_through_covers = false  # real opaque covers
 	await _wait(1.2)  # no tap needed: the first slot is focused on start

@@ -9,6 +9,7 @@ extends Control
 signal new_game_requested
 signal continue_requested
 signal settings_requested
+signal buy_requested
 signal quit_requested
 
 ## Title shown at the top. Leave empty to use the project name.
@@ -35,6 +36,18 @@ signal quit_requested
 		hide_continue_when_unavailable = value
 		_refresh()
 
+## Show the "Buy full game" button (e.g. hide it once the game is owned).
+@export var show_buy_button: bool = false:
+	set(value):
+		show_buy_button = value
+		_refresh()
+
+## Text of the buy button, e.g. "Buy full game (CHF 2.00)".
+@export var buy_button_text: String = "Buy full game":
+	set(value):
+		buy_button_text = value
+		_refresh()
+
 ## Show the Settings button.
 @export var show_settings: bool = true:
 	set(value):
@@ -56,6 +69,7 @@ signal quit_requested
 @onready var _new_game: Button = %NewGameButton
 @onready var _continue: Button = %ContinueButton
 @onready var _settings: Button = %SettingsButton
+@onready var _buy: Button = %BuyButton
 @onready var _quit: Button = %QuitButton
 
 
@@ -63,6 +77,7 @@ func _ready() -> void:
 	_new_game.pressed.connect(new_game_requested.emit)
 	_continue.pressed.connect(continue_requested.emit)
 	_settings.pressed.connect(settings_requested.emit)
+	_buy.pressed.connect(buy_requested.emit)
 	_quit.pressed.connect(_on_quit_pressed)
 	_refresh()
 	_focus_first_button.call_deferred()
@@ -77,6 +92,8 @@ func _refresh() -> void:
 	_continue.disabled = not continue_available
 	_continue.visible = continue_available or not hide_continue_when_unavailable
 	_settings.visible = show_settings
+	_buy.visible = show_buy_button
+	_buy.text = buy_button_text
 	_quit.visible = show_quit and _platform_supports_quit()
 
 

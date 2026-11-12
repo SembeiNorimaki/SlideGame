@@ -5,6 +5,8 @@ signal completed
 signal exited
 signal slide_finished
 
+## Which set (see sets.json) and which level in it.
+@export var game_set_id: String = "letters"
 @export var level: int = 1
 ## Pause after a correct guess before leaving the level.
 @export var success_delay: float = 1.8
@@ -44,11 +46,11 @@ var _solved := false
 
 
 func _ready() -> void:
-	%LevelLabel.text = "Level %d" % level
+	var game_set := GameData.get_set(game_set_id)
+	%LevelLabel.text = "%s %d" % [game_set.title, level]
 	%ExitButton.pressed.connect(exited.emit)
-	var info := GameData.level(level)
-	_shape.texture = ShapeAtlas.texture_at(info.atlas_coords)
-	_guess.solution = info.solution
+	_shape.texture = game_set.texture_for(level)
+	_guess.solution = game_set.level(level).solution
 	_guess.guess_changed.connect(_on_guess_changed)
 	_guess.submitted.connect(func(_g): submit())
 	_submit.pressed.connect(submit)

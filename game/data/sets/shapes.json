@@ -1,0 +1,29 @@
+{
+  "levels": [
+    {"atlas_coords": [0, 0], "solution": "star"},
+    {"atlas_coords": [1, 0], "solution": "heart"},
+    {"atlas_coords": [2, 0], "solution": "moon"},
+    {"atlas_coords": [3, 0], "solution": "sun"},
+    {"atlas_coords": [4, 0], "solution": "house"},
+    {"atlas_coords": [0, 1], "solution": "arrow"},
+    {"atlas_coords": [1, 1], "solution": "cross"},
+    {"atlas_coords": [2, 1], "solution": "triangle"},
+    {"atlas_coords": [3, 1], "solution": "circle"},
+    {"atlas_coords": [4, 1], "solution": "square"},
+    {"atlas_coords": [0, 2], "solution": "diamond"},
+    {"atlas_coords": [1, 2], "solution": "hexagon"},
+    {"atlas_coords": [2, 2], "solution": "cloud"},
+    {"atlas_coords": [3, 2], "solution": "key"},
+    {"atlas_coords": [4, 2], "solution": "umbrella"},
+    {"atlas_coords": [0, 3], "solution": "cup"},
+    {"atlas_coords": [1, 3], "solution": "tree"},
+    {"atlas_coords": [2, 3], "solution": "fish"},
+    {"atlas_coords": [3, 3], "solution": "lightning"},
+    {"atlas_coords": [4, 3], "solution": "drop"},
+    {"atlas_coords": [0, 4], "solution": "leaf"},
+    {"atlas_coords": [1, 4], "solution": "mushroom"},
+    {"atlas_coords": [2, 4], "solution": "bell"},
+    {"atlas_coords": [3, 4], "solution": "crown"},
+    {"atlas_coords": [4, 4], "solution": "bone"}
+  ]
+}

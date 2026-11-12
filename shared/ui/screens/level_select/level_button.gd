@@ -31,23 +31,10 @@ func _apply_state() -> void:
 func _draw() -> void:
 	match state:
 		State.LOCKED:
-			_draw_lock(size / 2.0, minf(size.x, size.y) * 0.34, get_theme_color(&"font_disabled_color"))
+			Icons.draw_lock(self, size / 2.0, minf(size.x, size.y) * 0.34, get_theme_color(&"font_disabled_color"))
 		State.COMPLETED:
 			var r := minf(size.x, size.y) * 0.13
 			_draw_check(Vector2(size.x - r - 10.0, r + 10.0), r, get_theme_color(&"badge_color"))
-
-
-func _draw_lock(center: Vector2, s: float, color: Color) -> void:
-	var body := Rect2(center.x - s * 0.5, center.y - s * 0.05, s, s * 0.7)
-	var style := StyleBoxFlat.new()
-	style.bg_color = color
-	style.set_corner_radius_all(int(s * 0.12))
-	draw_style_box(style, body)
-	var shackle_r := s * 0.3
-	var shackle_c := Vector2(center.x, body.position.y)
-	draw_arc(shackle_c, shackle_r, PI, TAU, 24, color, s * 0.12, true)
-	draw_line(shackle_c + Vector2(-shackle_r, 0), shackle_c + Vector2(-shackle_r, s * 0.05), color, s * 0.12, true)
-	draw_line(shackle_c + Vector2(shackle_r, 0), shackle_c + Vector2(shackle_r, s * 0.05), color, s * 0.12, true)
 
 
 func _draw_check(center: Vector2, r: float, color: Color) -> void:
