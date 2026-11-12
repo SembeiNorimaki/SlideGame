@@ -50,7 +50,10 @@ func _on_new_game() -> void:
 
 func _on_level_completed(level: int) -> void:
 	progress.complete_level(level)
-	show_level_select()
+	if level < GameData.level_count():
+		start_level(level + 1)  # go straight on to the next level
+	else:
+		show_level_select()  # last level done  # TODO: an "all levels complete" screen
 
 
 func _switch_to(screen: Node) -> void:

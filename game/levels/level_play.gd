@@ -57,6 +57,8 @@ func _ready() -> void:
 	_track.resized.connect(_layout_covers)
 	_layout_covers()
 	_start_slide.call_deferred()  # wait one frame so the track has its final size
+	# Ready to type immediately: focus the first slot (opens the keyboard on phones).
+	_guess.focus_input.call_deferred()
 
 
 func _start_slide() -> void:

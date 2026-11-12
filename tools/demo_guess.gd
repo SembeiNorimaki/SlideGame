@@ -1,6 +1,7 @@
 extends Node
 ## Scripted demo for recording: opens level 1, types a guess with real
-## key events (including one typo + Backspace), clicks Submit.
+## key events (including one typo + Backspace), clicks Submit,
+## and lands on level 2 with its first slot already focused.
 
 var main: Node
 
@@ -13,9 +14,7 @@ func _ready() -> void:
 	main.start_level(1)
 	var play: Control = main._current
 	play.debug_see_through_covers = false  # real opaque covers
-	await _wait(1.2)
-	await _click(play.get_node("%GuessInput"))
-	await _wait(0.4)
+	await _wait(1.2)  # no tap needed: the first slot is focused on start
 	for ch in "hellp":
 		await _type(ch)
 	await _wait(0.4)

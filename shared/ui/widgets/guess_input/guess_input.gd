@@ -53,6 +53,8 @@ func _ready() -> void:
 	_line.context_menu_enabled = false
 	_line.selecting_enabled = false
 	_line.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_line.virtual_keyboard_enabled = true
+	_line.virtual_keyboard_show_on_focus = true  # focusing opens the phone keyboard
 	_line.modulate = Color.TRANSPARENT  # invisible, but still receives typing
 	_line.size = Vector2(1, 1)
 	_line.text_changed.connect(_on_text_changed)
@@ -67,6 +69,8 @@ func _ready() -> void:
 
 ## Puts the cursor in the field (opens the on-screen keyboard on phones).
 func focus_input() -> void:
+	if not _line.editable:
+		return
 	_line.grab_focus()
 	_line.caret_column = _line.text.length()
 
