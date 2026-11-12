@@ -1,0 +1,55 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://shared/ui/widgets/answer_input/answer_input.gd" id="1_ai"]
+
+[sub_resource type="StyleBoxFlat" id="line_normal"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 14.0
+draw_center = false
+border_width_bottom = 6
+border_color = Color(0.45, 0.48, 0.58, 1)
+
+[sub_resource type="StyleBoxFlat" id="line_focus"]
+draw_center = false
+border_width_bottom = 6
+border_color = Color(0.96, 0.62, 0.24, 1)
+
+[sub_resource type="StyleBoxFlat" id="line_read_only"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 14.0
+draw_center = false
+border_width_bottom = 6
+border_color = Color(0.45, 0.48, 0.58, 1)
+
+[node name="AnswerInput" type="Control"]
+custom_minimum_size = Vector2(0, 110)
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_ai")
+
+[node name="Field" type="LineEdit" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_placeholder_color = Color(0.93, 0.94, 0.97, 0.3)
+theme_override_colors/caret_color = Color(0.96, 0.62, 0.24, 1)
+theme_override_constants/caret_width = 4
+theme_override_font_sizes/font_size = 60
+theme_override_styles/normal = SubResource("line_normal")
+theme_override_styles/focus = SubResource("line_focus")
+theme_override_styles/read_only = SubResource("line_read_only")
+placeholder_text = "Type your answer"
+alignment = 1
+max_length = 24
+context_menu_enabled = false
+emoji_menu_enabled = false
+clear_button_enabled = false
+caret_blink = true

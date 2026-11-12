@@ -5,11 +5,12 @@ Each shape is drawn large, cropped to its ink, scaled to fit the cell
 Usage (from the project root):  python3 tools/make_silhouettes.py
 Writes assets/sets/shapes/atlas.png and game/data/sets/shapes.json.
 """
-import json
 import math
 import os
 
 from PIL import Image, ImageDraw
+
+from levels_json import write_levels
 
 SIZE = 64
 PAD = 4
@@ -205,12 +206,34 @@ def bone(d):
         circle(d, x, 624, 120)
 
 
+# (drawing function, accepted answers per language). The first answer of
+# each language is the main one; the rest are accepted synonyms.
 SHAPES = [
-    ("star", star), ("heart", heart), ("moon", moon), ("sun", sun), ("house", house),
-    ("arrow", arrow), ("cross", cross), ("triangle", triangle), ("circle", circle_shape), ("square", square),
-    ("diamond", diamond), ("hexagon", hexagon), ("cloud", cloud), ("key", key), ("umbrella", umbrella),
-    ("cup", cup), ("tree", tree), ("fish", fish), ("lightning", lightning), ("drop", drop),
-    ("leaf", leaf), ("mushroom", mushroom), ("bell", bell), ("crown", crown), ("bone", bone),
+    (star, {"EN": ["star"], "ES": ["estrella"]}),
+    (heart, {"EN": ["heart"], "ES": ["corazón"]}),
+    (moon, {"EN": ["moon", "crescent", "crescent moon"], "ES": ["luna", "media luna"]}),
+    (sun, {"EN": ["sun"], "ES": ["sol"]}),
+    (house, {"EN": ["house", "home"], "ES": ["casa"]}),
+    (arrow, {"EN": ["arrow"], "ES": ["flecha"]}),
+    (cross, {"EN": ["cross", "plus"], "ES": ["cruz", "más"]}),
+    (triangle, {"EN": ["triangle"], "ES": ["triángulo"]}),
+    (circle_shape, {"EN": ["circle", "disc", "disk", "dot"], "ES": ["círculo", "circunferencia", "punto"]}),
+    (square, {"EN": ["square"], "ES": ["cuadrado"]}),
+    (diamond, {"EN": ["diamond", "rhombus"], "ES": ["rombo", "diamante"]}),
+    (hexagon, {"EN": ["hexagon"], "ES": ["hexágono"]}),
+    (cloud, {"EN": ["cloud"], "ES": ["nube"]}),
+    (key, {"EN": ["key"], "ES": ["llave"]}),
+    (umbrella, {"EN": ["umbrella"], "ES": ["paraguas"]}),
+    (cup, {"EN": ["cup", "mug"], "ES": ["taza"]}),
+    (tree, {"EN": ["tree", "pine", "pine tree", "fir", "christmas tree"], "ES": ["árbol", "pino", "abeto", "árbol de navidad"]}),
+    (fish, {"EN": ["fish"], "ES": ["pez", "pescado"]}),
+    (lightning, {"EN": ["lightning", "bolt", "lightning bolt", "thunderbolt"], "ES": ["rayo", "relámpago"]}),
+    (drop, {"EN": ["drop", "droplet", "water drop", "raindrop", "teardrop"], "ES": ["gota", "gota de agua", "lágrima"]}),
+    (leaf, {"EN": ["leaf"], "ES": ["hoja"]}),
+    (mushroom, {"EN": ["mushroom", "toadstool"], "ES": ["seta", "champiñón", "hongo"]}),
+    (bell, {"EN": ["bell"], "ES": ["campana"]}),
+    (crown, {"EN": ["crown"], "ES": ["corona"]}),
+    (bone, {"EN": ["bone"], "ES": ["hueso"]}),
 ]
 
 
@@ -234,15 +257,13 @@ def main():
     rows = -(-len(SHAPES) // COLUMNS)
     atlas = Image.new("RGBA", (COLUMNS * SIZE, rows * SIZE), (255, 255, 255, 0))
     levels = []
-    for i, (name, fn) in enumerate(SHAPES):
+    for i, (fn, solution) in enumerate(SHAPES):
         col, row = i % COLUMNS, i // COLUMNS
         atlas.paste(render(fn), (col * SIZE, row * SIZE))
-        levels.append({"atlas_coords": [col, row], "solution": name})
+        levels.append({"atlas_coords": [col, row], "solution": solution})
     os.makedirs("assets/sets/shapes", exist_ok=True)
     atlas.save("assets/sets/shapes/atlas.png")
-    os.makedirs("game/data/sets", exist_ok=True)
-    with open("game/data/sets/shapes.json", "w") as f:
-        f.write('{\n  "levels": [\n' + ",\n".join("    " + json.dumps(l) for l in levels) + "\n  ]\n}\n")
+    write_levels("game/data/sets/shapes.json", levels)
 
 
 if __name__ == "__main__":

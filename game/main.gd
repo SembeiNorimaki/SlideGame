@@ -4,6 +4,7 @@ extends Node
 
 const MAIN_MENU := preload("res://shared/ui/screens/main_menu/main_menu.tscn")
 const SET_SELECT := preload("res://shared/ui/screens/set_select/set_select.tscn")
+const SETTINGS := preload("res://shared/ui/screens/settings/settings_screen.tscn")
 const LEVEL_SELECT := preload("res://shared/ui/screens/level_select/level_select.tscn")
 const LEVEL := preload("res://game/levels/level_play.tscn")
 
@@ -23,15 +24,25 @@ func _ready() -> void:
 func show_main_menu() -> void:
 	var menu: MainMenu = MAIN_MENU.instantiate()
 	menu.game_title = "Slide Game"
-	menu.footer_text = "v0.2.0"
+	menu.footer_text = "v0.3.0"
 	menu.continue_available = GameData.has_progress()
 	menu.show_buy_button = Store.can_purchase() and not GameData.owns_full_game()
 	menu.buy_button_text = _buy_text()
 	menu.new_game_requested.connect(_on_new_game)
 	menu.continue_requested.connect(show_set_select)
 	menu.buy_requested.connect(buy_full_game)
-	menu.settings_requested.connect(func(): print("Settings"))  # TODO: settings screen
+	menu.settings_requested.connect(show_settings)
 	_switch_to(menu)
+
+
+func show_settings() -> void:
+	var screen: SettingsScreen = SETTINGS.instantiate()
+	_switch_to(screen)
+	screen.setup(GameData.languages, GameData.DIFFICULTIES)
+	screen.back_requested.connect(show_main_menu)
+	screen.reset_progress_confirmed.connect(func():
+		GameData.reset_progress()
+		_toast.show_message("Progress reset"))
 
 
 func show_set_select() -> void:
@@ -42,8 +53,8 @@ func show_set_select() -> void:
 		var locked := not GameData.is_unlocked(s)
 		entries.append({
 			"id": s.id,
-			"title": s.title,
-			"subtitle": "Unlock with the full game" if locked else "%d / %d completed" % [s.progress.completed_count(), s.level_count()],
+			"title": tr(s.title),
+			"subtitle": tr("Unlock with the full game") if locked else tr("%d / %d completed") % [s.progress.completed_count(), s.level_count()],
 			"locked": locked,
 		})
 	select.set_entries(entries)
@@ -56,7 +67,7 @@ func show_level_select(set_id: String) -> void:
 	var game_set := GameData.get_set(set_id)
 	var select: LevelSelect = LEVEL_SELECT.instantiate()
 	select.columns = 4
-	select.title = game_set.title
+	select.title = tr(game_set.title)
 	_switch_to(select)
 	select.use_progress(game_set.progress)
 	select.level_selected.connect(func(level: int): start_level(set_id, level))
@@ -80,11 +91,16 @@ func buy_full_game() -> void:
 
 func _buy_text() -> String:
 	var price := Store.get_price(GameData.full_game_product_id)
-	return "Buy full game (%s)" % price if price != "" else "Buy full game"
+	return tr("Buy full game (%s)") % price if price != "" else tr("Buy full game")
 
 
 func _on_new_game() -> void:
-	GameData.reset_progress()  # TODO: ask for confirmation if GameData.has_progress()
+	if GameData.has_progress():
+		var ok := await ConfirmDialog.ask(self, "Start a new game?",
+				"This deletes your progress in every set.", "Start")
+		if not ok:
+			return
+	GameData.reset_progress()
 	show_set_select()
 
 

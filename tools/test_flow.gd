@@ -10,8 +10,8 @@ func _ready() -> void:
 	for i in 3:
 		await get_tree().process_frame
 	var owner := get_viewport().gui_get_focus_owner()
-	print("level 1 focus owner: ", owner.get_class(), " inside GuessInput: ", owner.get_parent() is GuessInput)
-	for ch in "hello":
+	print("level 1 focus owner: ", owner.get_class(), " inside AnswerInput: ", owner.owner is AnswerInput)
+	for ch in "a":
 		var e := InputEventKey.new()
 		e.keycode = OS.find_keycode_from_string(ch.to_upper())
 		e.unicode = ch.unicode_at(0)
@@ -24,7 +24,7 @@ func _ready() -> void:
 		await get_tree().process_frame
 	print("after win: current level = ", main._current.get("level"), "  completed = ", GameData.get_set("letters").progress.completed_levels())
 	owner = get_viewport().gui_get_focus_owner()
-	print("level 2 focus owner: ", owner.get_class() if owner else "none", " inside GuessInput: ", owner != null and owner.get_parent() is GuessInput)
+	print("level 2 focus owner: ", owner.get_class() if owner else "none", " inside AnswerInput: ", owner != null and owner.owner is AnswerInput)
 	main.start_level("letters", 26)
 	main._on_level_completed("letters", 26)
 	await get_tree().process_frame

@@ -15,12 +15,11 @@ func _ready() -> void:
 	var play: Control = main._current
 	play.debug_see_through_covers = false  # real opaque covers
 	await _wait(1.2)  # no tap needed: the first slot is focused on start
-	for ch in "hellp":
-		await _type(ch)
+	await _type("b")
 	await _wait(0.4)
 	await _key(KEY_BACKSPACE, 0)
 	await _wait(0.4)
-	await _type("o")
+	await _type("a")
 	await _wait(0.8)
 	await _click(play.get_node("%SubmitButton"))
 	await _wait(3.0)  # success reveal, then back to level select

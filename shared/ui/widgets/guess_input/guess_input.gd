@@ -1,6 +1,10 @@
 class_name GuessInput
 extends Control
-## Word-guess input: one underscore per character of the solution
+## Word-guess input with one underscore per character of the solution
+## (scene: guess_input.tscn). Shows the answer length, so it suits games
+## with a single accepted answer; see AnswerInput for free-length answers.
+##
+## One underscore per character of the solution
 ## (e.g. "sun" -> _ _ _). Typed characters appear on the underscores,
 ## Backspace/Delete removes the last one. Spaces in the solution are shown
 ## as gaps and don't need to be typed.

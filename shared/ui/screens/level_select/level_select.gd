@@ -98,7 +98,7 @@ func _refresh_labels() -> void:
 		return
 	_title.text = title
 	_progress_label.visible = show_progress_text
-	_progress_label.text = "%d / %d completed" % [_completed.size(), level_count]
+	_progress_label.text = tr("%d / %d completed") % [_completed.size(), level_count]
 
 
 func _unhandled_input(event: InputEvent) -> void:

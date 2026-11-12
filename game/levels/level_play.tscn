@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://game/levels/level_play.gd" id="1_lp"]
-[ext_resource type="Script" path="res://shared/ui/widgets/guess_input/guess_input.gd" id="2_gi"]
+[ext_resource type="PackedScene" path="res://shared/ui/widgets/answer_input/answer_input.tscn" id="2_ai"]
 
 [node name="LevelPlay" type="Control"]
 layout_mode = 3
@@ -68,14 +68,13 @@ mouse_filter = 2
 
 [node name="GuessArea" type="MarginContainer" parent="Layout"]
 layout_mode = 2
-theme_override_constants/margin_left = 32
+theme_override_constants/margin_left = 72
 theme_override_constants/margin_top = 40
-theme_override_constants/margin_right = 32
+theme_override_constants/margin_right = 72
 
-[node name="GuessInput" type="Control" parent="Layout/GuessArea"]
+[node name="AnswerInput" parent="Layout/GuessArea" instance=ExtResource("2_ai")]
 unique_name_in_owner = true
 layout_mode = 2
-script = ExtResource("2_gi")
 
 [node name="Feedback" type="Label" parent="Layout"]
 unique_name_in_owner = true
@@ -93,6 +92,7 @@ theme_override_constants/margin_right = 160
 [node name="SubmitButton" type="Button" parent="Layout/SubmitArea"]
 unique_name_in_owner = true
 layout_mode = 2
+focus_mode = 0
 text = "Submit"
 
 [node name="Spacer" type="Control" parent="Layout"]

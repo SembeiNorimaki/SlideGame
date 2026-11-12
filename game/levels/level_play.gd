@@ -11,6 +11,7 @@ signal slide_finished
 ## Pause after a correct guess before leaving the level.
 @export var success_delay: float = 1.8
 ## Seconds the shape takes to cross the whole screen.
+## Overridden by the difficulty chosen in Settings.
 @export var slide_duration: float = 3.0
 ## On-screen size of the shape (the source image is 64x64).
 @export var shape_size: float = 256.0
@@ -20,6 +21,7 @@ signal slide_finished
 @export_group("Covers")
 ## Width of the slit between the two covers, in screen pixels.
 ## The shape is drawn 4x (64 -> 256 px), so 4 px shows one image column.
+## Overridden by the difficulty chosen in Settings.
 @export var slit_width: float = 4.0:
 	set(value):
 		slit_width = value
@@ -29,7 +31,7 @@ signal slide_finished
 		cover_color = value
 		_layout_covers()
 ## Testing aid: makes the covers see-through so the hidden shape is visible.
-@export var debug_see_through_covers: bool = true:
+@export var debug_see_through_covers: bool = false:
 	set(value):
 		debug_see_through_covers = value
 		_layout_covers()
@@ -38,29 +40,33 @@ signal slide_finished
 @onready var _track: Control = %Track
 @onready var _left_cover: ColorRect = %LeftCover
 @onready var _right_cover: ColorRect = %RightCover
-@onready var _guess: GuessInput = %GuessInput
+@onready var _answer: AnswerInput = %AnswerInput
 @onready var _submit: Button = %SubmitButton
 @onready var _feedback: Label = %Feedback
 var _tween: Tween
 var _solved := false
+var _accepted := PackedStringArray()
 
 
 func _ready() -> void:
 	var game_set := GameData.get_set(game_set_id)
-	%LevelLabel.text = "%s %d" % [game_set.title, level]
+	%LevelLabel.text = "%s %d" % [tr(game_set.title), level]
 	%ExitButton.pressed.connect(exited.emit)
 	_shape.texture = game_set.texture_for(level)
-	_guess.solution = game_set.level(level).solution
-	_guess.guess_changed.connect(_on_guess_changed)
-	_guess.submitted.connect(func(_g): submit())
+	_accepted = GameData.answers(game_set, level)
+	var difficulty := GameData.difficulty_params()
+	slide_duration = difficulty.slide_duration
+	slit_width = difficulty.slit_width
+	_answer.text_changed.connect(_on_answer_changed)
+	_answer.submitted.connect(func(_t): submit())
 	_submit.pressed.connect(submit)
-	_on_guess_changed("")
+	_on_answer_changed("")
 	_shape.size = Vector2(shape_size, shape_size)
 	_track.resized.connect(_layout_covers)
 	_layout_covers()
 	_start_slide.call_deferred()  # wait one frame so the track has its final size
-	# Ready to type immediately: focus the first slot (opens the keyboard on phones).
-	_guess.focus_input.call_deferred()
+	# Ready to type immediately (opens the keyboard on phones).
+	_answer.focus_input.call_deferred()
 
 
 func _start_slide() -> void:
@@ -91,20 +97,20 @@ func _layout_covers() -> void:
 	_right_cover.color = c
 
 
-## Compares the typed guess with the solution.
+## Checks the typed answer against every accepted answer for the language.
 func submit() -> void:
-	if _solved or not _guess.is_complete():
+	if _solved or not _answer.has_text():
 		return
-	if _guess.is_correct():
+	if AnswerMatcher.matches(_answer.get_text(), _accepted):
 		_on_solved()
 	else:
-		_guess.show_result(false)
+		_answer.show_result(false)
 		_feedback.text = "Not quite, try again"
-		_feedback.modulate = _guess.wrong_color
+		_feedback.modulate = _answer.wrong_color
 
 
-func _on_guess_changed(_g: String) -> void:
-	_submit.disabled = _solved or not _guess.is_complete()
+func _on_answer_changed(_t: String) -> void:
+	_submit.disabled = _solved or not _answer.has_text()
 	if not _solved:
 		_feedback.text = ""
 
@@ -112,9 +118,9 @@ func _on_guess_changed(_g: String) -> void:
 func _on_solved() -> void:
 	_solved = true
 	_submit.disabled = true
-	_guess.show_result(true)
+	_answer.show_result(true)
 	_feedback.text = "Correct!"
-	_feedback.modulate = _guess.correct_color
+	_feedback.modulate = _answer.correct_color
 	# Reveal: stop the shape in the middle and fade the covers away.
 	if _tween:
 		_tween.kill()

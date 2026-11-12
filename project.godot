@@ -10,6 +10,7 @@ config/features=PackedStringArray("4.5", "GL Compatibility")
 
 [autoload]
 
+Settings="*res://shared/settings/settings.gd"
 Store="*res://shared/store/store.gd"
 GameData="*res://game/game_data.gd"
 
@@ -26,6 +27,10 @@ window/handheld/orientation=1
 [gui]
 
 theme/custom="res://shared/ui/theme/default_theme.tres"
+
+[internationalization]
+
+locale/translations=PackedStringArray("res://game/data/i18n/ui.en.translation", "res://game/data/i18n/ui.es.translation")
 
 [rendering]
 
