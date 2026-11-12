@@ -49,6 +49,13 @@ func focus_input() -> void:
 	_field.caret_column = _field.text.length()
 
 
+## false = can't be typed in or focused (e.g. while a tutorial explains).
+func set_editable(editable: bool) -> void:
+	_field.editable = editable
+	if not editable:
+		_field.release_focus()
+
+
 func get_text() -> String:
 	return _field.text
 

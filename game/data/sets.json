@@ -17,7 +17,29 @@
       "atlas": "res://assets/sets/letters/atlas.png",
       "cell_size": 256,
       "levels": "res://game/data/sets/letters.json",
-      "free": true
+      "free": true,
+      "tutorial": {
+        "image": "res://assets/tutorial/smiley.png",
+        "solution": {
+          "EN": [
+            "smiley",
+            "smiley face",
+            "smile",
+            "face",
+            "happy face",
+            "emoji"
+          ],
+          "ES": [
+            "cara",
+            "sonrisa",
+            "carita",
+            "cara sonriente",
+            "cara feliz",
+            "emoji",
+            "emoticono"
+          ]
+        }
+      }
     },
     {
       "id": "shapes",

@@ -7,6 +7,7 @@ const SET_SELECT := preload("res://shared/ui/screens/set_select/set_select.tscn"
 const SETTINGS := preload("res://shared/ui/screens/settings/settings_screen.tscn")
 const LEVEL_SELECT := preload("res://shared/ui/screens/level_select/level_select.tscn")
 const LEVEL := preload("res://game/levels/level_play.tscn")
+const TUTORIAL := preload("res://game/levels/tutorial.tscn")
 
 var _current: Node
 var _toast := Toast.new()
@@ -75,8 +76,9 @@ func show_level_select(set_id: String) -> void:
 	select.back_requested.connect(show_set_select)
 
 
+## Level 0 is the set's tutorial.
 func start_level(set_id: String, level: int) -> void:
-	var scene := LEVEL.instantiate()
+	var scene := (TUTORIAL if level == 0 else LEVEL).instantiate()
 	scene.game_set_id = set_id
 	scene.level = level
 	scene.completed.connect(_on_level_completed.bind(set_id, level))
@@ -107,6 +109,10 @@ func _on_new_game() -> void:
 
 func _on_level_completed(stars: int, set_id: String, level: int) -> void:
 	var game_set := GameData.get_set(set_id)
+	if level == 0:
+		game_set.progress.complete_tutorial()
+		start_level(set_id, 1)
+		return
 	game_set.progress.complete_level(level, stars)
 	if level < game_set.level_count():
 		start_level(set_id, level + 1)  # go straight on to the next level

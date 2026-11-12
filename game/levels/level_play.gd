@@ -1,3 +1,4 @@
+class_name LevelPlay
 extends Control
 ## Play screen: the level's shape slides past a thin slit between two covers.
 ## Vertical slit: the shape moves right to left. Horizontal slit: top to bottom.
@@ -10,7 +11,7 @@ signal slide_finished
 
 enum SlitMode { VERTICAL, HORIZONTAL }
 
-## Which set (see sets.json) and which level in it.
+## Which set (see sets.json) and which level in it (0 = the set's tutorial).
 @export var game_set_id: String = "letters"
 @export var level: int = 1
 ## Pause after a correct guess before leaving the level.
@@ -41,6 +42,11 @@ enum SlitMode { VERTICAL, HORIZONTAL }
 	set(value):
 		debug_see_through_covers = value
 		_layout_covers()
+## Opacity of the covers (1 = solid). The tutorial animates it.
+var cover_alpha: float = 1.0:
+	set(value):
+		cover_alpha = value
+		_layout_covers()
 
 @onready var _shape: TextureRect = %Shape
 @onready var _track: Control = %Track
@@ -61,13 +67,11 @@ var attempts := 0
 
 func _ready() -> void:
 	var game_set := GameData.get_set(game_set_id)
-	%LevelLabel.text = "%s %d" % [tr(game_set.title), level]
+	%LevelLabel.text = tr("Tutorial") if level == 0 else "%s %d" % [tr(game_set.title), level]
 	%ExitButton.pressed.connect(exited.emit)
 	_shape.texture = game_set.texture_for(level)
 	_accepted = GameData.answers(game_set, level)
-	var difficulty := GameData.difficulty_params()
-	slide_duration *= difficulty.duration_scale
-	slit_width *= difficulty.slit_scale
+	_apply_difficulty()
 	_answer.text_changed.connect(_on_answer_changed)
 	_answer.submitted.connect(func(_t): submit())
 	_submit.pressed.connect(submit)
@@ -80,6 +84,18 @@ func _ready() -> void:
 	_start_slide.call_deferred()  # wait one frame so the track has its final size
 	# Ready to type immediately (opens the keyboard on phones).
 	_answer.focus_input.call_deferred()
+
+
+## Scales slide_duration and slit_width for the difficulty chosen in Settings.
+func _apply_difficulty() -> void:
+	var difficulty := GameData.difficulty_params()
+	slide_duration *= difficulty.duration_scale
+	slit_width *= difficulty.slit_scale
+
+
+## Whether solving this screen shows stars.
+func _awards_stars() -> bool:
+	return GameData.stars_enabled
 
 
 ## Switches between the vertical and horizontal slit and restarts the slide.
@@ -138,7 +154,7 @@ func _layout_covers() -> void:
 		_cover_b.position = Vector2(0.0, mid + half)
 		_cover_b.size = Vector2(t.x, t.y - (mid + half))
 	var c := cover_color
-	c.a = 0.6 if debug_see_through_covers else 1.0
+	c.a = 0.6 if debug_see_through_covers else cover_alpha
 	_cover_a.color = c
 	_cover_b.color = c
 
@@ -178,7 +194,7 @@ func _on_solved() -> void:
 	reveal.tween_property(_cover_a, "modulate:a", 0.0, 0.5)
 	reveal.tween_property(_cover_b, "modulate:a", 0.0, 0.5)
 	var stars := GameData.stars_for_attempts(attempts)
-	if GameData.stars_enabled:
+	if _awards_stars():
 		_stars.pop_in(stars)
 	await get_tree().create_timer(success_delay).timeout
 	completed.emit(stars)

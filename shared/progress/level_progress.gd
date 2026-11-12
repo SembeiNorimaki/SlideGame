@@ -1,29 +1,38 @@
 class_name LevelProgress
 extends RefCounted
 ## Reusable linear level progression, saved as JSON:
-##   {"levels": [{"completed": true, "stars": 3}, {"completed": false, "stars": 0}, ...]}
-## Entry i is level i + 1. Level 1 is always unlocked; completing level N
+##   {"tutorial_completed": true,
+##    "levels": [{"completed": true, "stars": 3}, {"completed": false, "stars": 0}, ...]}
+## Entry i is level i + 1. Level 1 is unlocked from the start, or, if the set
+## has a tutorial (level 0), once the tutorial is passed. Completing level N
 ## unlocks level N + 1. Completed levels stay playable for replays; a replay
 ## only ever raises a level's stars (best result is kept).
 
 var save_path: String
 var level_count: int
-## Highest playable level (1-based), derived from what's completed.
+## Whether the set starts with a tutorial (level 0) that gates level 1.
+var has_tutorial: bool
+var tutorial_completed := false
+## Highest playable level, derived from what's completed. 0 means only the
+## tutorial can be played.
 var unlocked_up_to: int:
 	get:
 		var highest := 0
 		for i in _completed.size():
 			if _completed[i]:
 				highest = i + 1
+		if highest == 0 and has_tutorial and not tutorial_completed:
+			return 0
 		return clampi(highest + 1, 1, level_count)
 
 var _completed: Array[bool] = []
 var _stars: Array[int] = []
 
 
-func _init(p_level_count: int, p_save_path: String = "user://progress.json") -> void:
+func _init(p_level_count: int, p_save_path: String = "user://progress.json", p_has_tutorial: bool = false) -> void:
 	level_count = p_level_count
 	save_path = p_save_path
+	has_tutorial = p_has_tutorial
 	_completed.resize(level_count)
 	_completed.fill(false)
 	_stars.resize(level_count)
@@ -35,6 +44,8 @@ func _init(p_level_count: int, p_save_path: String = "user://progress.json") -> 
 
 
 func is_unlocked(level: int) -> bool:
+	if level == 0:
+		return has_tutorial
 	return level >= 1 and level <= unlocked_up_to
 
 
@@ -77,7 +88,12 @@ func completed_count() -> int:
 
 
 func has_progress() -> bool:
-	return _completed.has(true)
+	return tutorial_completed or _completed.has(true)
+
+
+func complete_tutorial() -> void:
+	tutorial_completed = true
+	save_to_disk()
 
 
 func complete_level(level: int, stars: int = 0) -> void:
@@ -89,6 +105,7 @@ func complete_level(level: int, stars: int = 0) -> void:
 func reset() -> void:
 	_completed.fill(false)
 	_stars.fill(0)
+	tutorial_completed = false
 	save_to_disk()
 
 
@@ -97,6 +114,7 @@ func load_from_disk() -> void:
 	if not data is Dictionary or not data.get("levels") is Array:
 		push_warning("Progress file unreadable, starting fresh: %s" % save_path)
 		return
+	tutorial_completed = data.get("tutorial_completed", false) == true
 	var entries: Array = data["levels"]
 	# Tolerates a file from an older version with fewer/more levels.
 	for i in mini(entries.size(), level_count):
@@ -114,4 +132,4 @@ func save_to_disk() -> void:
 	if f == null:
 		push_error("Can't write progress file %s: %s" % [save_path, error_string(FileAccess.get_open_error())])
 		return
-	f.store_string(JSON.stringify({"levels": entries}, "  "))
+	f.store_string(JSON.stringify({"tutorial_completed": tutorial_completed, "levels": entries}, "  "))

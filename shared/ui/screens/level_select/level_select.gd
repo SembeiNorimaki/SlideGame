@@ -2,7 +2,8 @@ class_name LevelSelect
 extends Control
 ## Generic level select grid, reusable across games.
 ##
-## Levels are laid out row by row (1 2 3 4 / 5 6 7 8 / ...). The screen holds
+## Levels are laid out row by row (1 2 3 4 / 5 6 7 8 / ...). An optional
+## tutorial appears first as level 0; level_selected(0) means "play the tutorial". The screen holds
 ## no save logic: call set_progress() (or use_progress() with a LevelProgress)
 ## and listen to level_selected / back_requested.
 
@@ -45,6 +46,8 @@ signal back_requested
 var _unlocked_up_to: int = 1
 var _completed: Dictionary = {}
 var _stars: Dictionary = {}
+var _has_tutorial := false
+var _tutorial_completed := false
 
 @onready var _title: Label = %Title
 @onready var _progress_label: Label = %ProgressLabel
@@ -70,9 +73,18 @@ func set_progress(unlocked_up_to: int, completed_levels: Array = [], stars_by_le
 	_rebuild()
 
 
+## Adds a level 0 tile in front of level 1.
+func set_tutorial(has_tutorial: bool, completed: bool) -> void:
+	_has_tutorial = has_tutorial
+	_tutorial_completed = completed
+	_rebuild()
+
+
 ## Convenience for games using the shared LevelProgress store.
 func use_progress(progress: LevelProgress) -> void:
 	level_count = progress.level_count
+	_has_tutorial = progress.has_tutorial
+	_tutorial_completed = progress.tutorial_completed
 	set_progress(progress.unlocked_up_to, progress.completed_levels(), progress.stars_by_level())
 
 
@@ -90,6 +102,13 @@ func _rebuild() -> void:
 	for child in _grid.get_children():
 		child.queue_free()
 	var focus_target: LevelButton = null
+	if _has_tutorial:
+		var tut := LevelButton.new(0, LevelButton.State.COMPLETED if _tutorial_completed else LevelButton.State.AVAILABLE, button_size)
+		tut.tooltip_text = tr("Tutorial")
+		tut.pressed.connect(level_selected.emit.bind(0))
+		_grid.add_child(tut)
+		if not _tutorial_completed:
+			focus_target = tut
 	for level in range(1, level_count + 1):
 		var button := LevelButton.new(level, state_of(level), button_size)
 		if show_stars:
