@@ -1,0 +1,29 @@
+{
+  "levels": [
+    {"atlas_coords": [0, 0], "solution": {"EN": ["scissors"], "ES": ["tijeras", "tijera"]}},
+    {"atlas_coords": [1, 0], "solution": {"EN": ["airplane", "plane", "aeroplane", "aircraft", "jet"], "ES": ["avión", "aeroplano"]}},
+    {"atlas_coords": [2, 0], "solution": {"EN": ["envelope", "letter", "mail", "email"], "ES": ["sobre", "carta", "correo"]}},
+    {"atlas_coords": [3, 0], "solution": {"EN": ["telephone", "phone"], "ES": ["teléfono"]}},
+    {"atlas_coords": [4, 0], "solution": {"EN": ["anchor"], "ES": ["ancla"]}},
+    {"atlas_coords": [0, 1], "solution": {"EN": ["pencil"], "ES": ["lápiz"]}},
+    {"atlas_coords": [1, 1], "solution": {"EN": ["coffee", "cup", "mug", "tea", "hot drink"], "ES": ["café", "taza", "té"]}},
+    {"atlas_coords": [2, 1], "solution": {"EN": ["spade", "spades"], "ES": ["pica", "picas"]}},
+    {"atlas_coords": [3, 1], "solution": {"EN": ["club", "clubs", "clover"], "ES": ["trébol", "tréboles"]}},
+    {"atlas_coords": [4, 1], "solution": {"EN": ["snowflake", "snow", "flake"], "ES": ["copo de nieve", "copo", "nieve"]}},
+    {"atlas_coords": [0, 2], "solution": {"EN": ["flower", "blossom"], "ES": ["flor"]}},
+    {"atlas_coords": [1, 2], "solution": {"EN": ["gear", "cog", "cogwheel", "settings"], "ES": ["engranaje", "rueda dentada", "piñón", "ajustes"]}},
+    {"atlas_coords": [2, 2], "solution": {"EN": ["scales", "scale", "balance", "justice"], "ES": ["balanza", "justicia"]}},
+    {"atlas_coords": [3, 2], "solution": {"EN": ["flag"], "ES": ["bandera"]}},
+    {"atlas_coords": [4, 2], "solution": {"EN": ["knight", "horse"], "ES": ["caballo"]}},
+    {"atlas_coords": [0, 3], "solution": {"EN": ["rook", "castle", "tower"], "ES": ["torre"]}},
+    {"atlas_coords": [1, 3], "solution": {"EN": ["king"], "ES": ["rey"]}},
+    {"atlas_coords": [2, 3], "solution": {"EN": ["pawn"], "ES": ["peón"]}},
+    {"atlas_coords": [3, 3], "solution": {"EN": ["skull", "skull and crossbones", "pirate", "poison", "danger"], "ES": ["calavera", "pirata", "veneno", "peligro"]}},
+    {"atlas_coords": [4, 3], "solution": {"EN": ["atom"], "ES": ["átomo"]}},
+    {"atlas_coords": [0, 4], "solution": {"EN": ["recycle", "recycling"], "ES": ["reciclaje", "reciclar"]}},
+    {"atlas_coords": [1, 4], "solution": {"EN": ["swords", "crossed swords", "sword"], "ES": ["espadas", "espada", "espadas cruzadas"]}},
+    {"atlas_coords": [2, 4], "solution": {"EN": ["keyboard"], "ES": ["teclado"]}},
+    {"atlas_coords": [3, 4], "solution": {"EN": ["yin yang", "yinyang"], "ES": ["yin yang", "yin y yang"]}},
+    {"atlas_coords": [4, 4], "solution": {"EN": ["peace", "victory", "peace sign", "v sign"], "ES": ["paz", "victoria", "signo de paz"]}}
+  ]
+}

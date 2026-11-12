@@ -1,0 +1,29 @@
+{
+  "levels": [
+    {"atlas_coords": [0, 0], "solution": {"EN": ["question mark", "question"], "ES": ["interrogación", "signo de interrogación", "interrogante", "pregunta"]}},
+    {"atlas_coords": [1, 0], "solution": {"EN": ["exclamation mark", "exclamation point", "exclamation"], "ES": ["exclamación", "signo de exclamación", "admiración"]}},
+    {"atlas_coords": [2, 0], "solution": {"EN": ["dollar", "dollar sign"], "ES": ["dólar", "signo de dólar"]}},
+    {"atlas_coords": [3, 0], "solution": {"EN": ["at", "at sign"], "ES": ["arroba"]}},
+    {"atlas_coords": [4, 0], "solution": {"EN": ["ampersand", "and"], "ES": ["et", "ampersand", "y"]}},
+    {"atlas_coords": [0, 1], "solution": {"EN": ["hash", "hashtag", "number sign", "pound sign"], "ES": ["almohadilla", "numeral", "hashtag", "almohada"]}},
+    {"atlas_coords": [1, 1], "solution": {"EN": ["percent", "percentage", "per cent"], "ES": ["porcentaje", "por ciento"]}},
+    {"atlas_coords": [2, 1], "solution": {"EN": ["plus", "add"], "ES": ["más", "suma"]}},
+    {"atlas_coords": [3, 1], "solution": {"EN": ["equals", "equal", "equal sign", "equals sign"], "ES": ["igual", "signo igual"]}},
+    {"atlas_coords": [4, 1], "solution": {"EN": ["euro"], "ES": ["euro"]}},
+    {"atlas_coords": [0, 2], "solution": {"EN": ["pound", "pound sterling"], "ES": ["libra", "libra esterlina"]}},
+    {"atlas_coords": [1, 2], "solution": {"EN": ["yen"], "ES": ["yen"]}},
+    {"atlas_coords": [2, 2], "solution": {"EN": ["check", "check mark", "tick"], "ES": ["check", "visto", "tic", "marca de verificación"]}},
+    {"atlas_coords": [3, 2], "solution": {"EN": ["copyright"], "ES": ["copyright", "derechos de autor"]}},
+    {"atlas_coords": [4, 2], "solution": {"EN": ["asterisk", "star"], "ES": ["asterisco", "estrella"]}},
+    {"atlas_coords": [0, 3], "solution": {"EN": ["infinity", "infinite"], "ES": ["infinito"]}},
+    {"atlas_coords": [1, 3], "solution": {"EN": ["pi"], "ES": ["pi"]}},
+    {"atlas_coords": [2, 3], "solution": {"EN": ["divide", "division", "divided by"], "ES": ["división", "dividir", "entre"]}},
+    {"atlas_coords": [3, 3], "solution": {"EN": ["plus minus", "plus or minus"], "ES": ["más menos", "más o menos"]}},
+    {"atlas_coords": [4, 3], "solution": {"EN": ["not equal", "not equals", "different"], "ES": ["distinto", "no igual", "diferente"]}},
+    {"atlas_coords": [0, 4], "solution": {"EN": ["less than", "smaller than"], "ES": ["menor que", "menor"]}},
+    {"atlas_coords": [1, 4], "solution": {"EN": ["square root", "root"], "ES": ["raíz", "raíz cuadrada"]}},
+    {"atlas_coords": [2, 4], "solution": {"EN": ["sigma", "sum"], "ES": ["sigma", "sumatorio", "suma"]}},
+    {"atlas_coords": [3, 4], "solution": {"EN": ["omega", "ohm"], "ES": ["omega", "ohmio"]}},
+    {"atlas_coords": [4, 4], "solution": {"EN": ["n tilde", "enye", "ene"], "ES": ["eñe"]}}
+  ]
+}

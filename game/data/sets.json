@@ -26,6 +26,22 @@
       "cell_size": 256,
       "levels": "res://game/data/sets/shapes.json",
       "free": false
+    },
+    {
+      "id": "symbols",
+      "title": "Symbols",
+      "atlas": "res://assets/sets/symbols/atlas.png",
+      "cell_size": 256,
+      "levels": "res://game/data/sets/symbols.json",
+      "free": false
+    },
+    {
+      "id": "objects",
+      "title": "Objects",
+      "atlas": "res://assets/sets/objects/atlas.png",
+      "cell_size": 256,
+      "levels": "res://game/data/sets/objects.json",
+      "free": false
     }
   ]
 }

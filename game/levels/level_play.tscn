@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://game/levels/level_play.gd" id="1_lp"]
 [ext_resource type="PackedScene" path="res://shared/ui/widgets/answer_input/answer_input.tscn" id="2_ai"]
 [ext_resource type="PackedScene" path="res://shared/ui/widgets/stars/stars_display.tscn" id="3_st"]
+[ext_resource type="Script" path="res://game/levels/slit_mode_button.gd" id="4_mb"]
 
 [node name="LevelPlay" type="Control"]
 layout_mode = 3
@@ -33,15 +34,33 @@ theme_override_constants/separation = 0
 
 [node name="TopBar" type="MarginContainer" parent="Layout"]
 layout_mode = 2
-theme_override_constants/margin_top = 48
-theme_override_constants/margin_bottom = 24
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 16
 
-[node name="LevelLabel" type="Label" parent="Layout/TopBar"]
+[node name="Row" type="HBoxContainer" parent="Layout/TopBar"]
+layout_mode = 2
+
+[node name="Balance" type="Control" parent="Layout/TopBar/Row"]
+custom_minimum_size = Vector2(96, 0)
+layout_mode = 2
+
+[node name="LevelLabel" type="Label" parent="Layout/TopBar/Row"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 48
 text = "Level 1"
 horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ModeButton" type="Button" parent="Layout/TopBar/Row"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(96, 80)
+layout_mode = 2
+focus_mode = 0
+script = ExtResource("4_mb")
 
 [node name="Track" type="Control" parent="Layout"]
 unique_name_in_owner = true
@@ -57,12 +76,12 @@ offset_bottom = 256.0
 expand_mode = 1
 stretch_mode = 5
 
-[node name="LeftCover" type="ColorRect" parent="Layout/Track"]
+[node name="CoverA" type="ColorRect" parent="Layout/Track"]
 unique_name_in_owner = true
 layout_mode = 0
 mouse_filter = 2
 
-[node name="RightCover" type="ColorRect" parent="Layout/Track"]
+[node name="CoverB" type="ColorRect" parent="Layout/Track"]
 unique_name_in_owner = true
 layout_mode = 0
 mouse_filter = 2

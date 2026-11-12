@@ -10,12 +10,10 @@ Writes assets/sets/shapes/atlas.png and game/data/sets/shapes.json.
 import math
 import os
 
-import numpy as np
 from PIL import Image, ImageDraw
-from scipy import ndimage
 
 from levels_json import write_levels
-from make_shapes import PAD, SIZE, SS, STROKE, make_atlas, to_rgba
+from make_shapes import fit, make_atlas, outline, to_rgba
 
 COLUMNS = 5
 C = 1024  # drawing canvas
@@ -244,18 +242,7 @@ def render(fn) -> Image.Image:
     img, d = canvas()
     d._image = img
     fn(d)
-    ink = img.crop(img.getbbox())
-    box = (SIZE - 2 * PAD) * SS
-    scale = min(box / ink.width, box / ink.height)
-    ink = ink.resize((max(1, round(ink.width * scale)), max(1, round(ink.height * scale))), Image.LANCZOS)
-    big = Image.new("L", (SIZE * SS, SIZE * SS), OFF)
-    big.paste(ink, ((big.width - ink.width) // 2, (big.height - ink.height) // 2))
-    if STROKE:
-        # Keep only the band within STROKE px of an edge (outer edge and holes).
-        filled = np.array(big) > 127
-        inside = ndimage.distance_transform_edt(filled)
-        big = Image.fromarray(((filled & (inside <= STROKE * SS)) * 255).astype(np.uint8))
-    return to_rgba(big)
+    return to_rgba(outline(fit(img)))
 
 
 def main():

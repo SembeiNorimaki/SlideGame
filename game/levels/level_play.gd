@@ -1,10 +1,14 @@
 extends Control
-## Play screen: the level's shape slides from off-screen right to off-screen left.
+## Play screen: the level's shape slides past a thin slit between two covers.
+## Vertical slit: the shape moves right to left. Horizontal slit: top to bottom.
+## The player can switch between them at any time with the mode button.
 
 ## stars: 1-3 earned for this solve (based on attempts), even if stars are hidden.
 signal completed(stars: int)
 signal exited
 signal slide_finished
+
+enum SlitMode { VERTICAL, HORIZONTAL }
 
 ## Which set (see sets.json) and which level in it.
 @export var game_set_id: String = "letters"
@@ -18,6 +22,8 @@ signal slide_finished
 @export var shape_size: float = 256.0
 ## Restart the slide when it leaves the screen.
 @export var loop: bool = true
+## Slit direction the level starts with.
+@export var mode: SlitMode = SlitMode.VERTICAL
 
 @export_group("Covers")
 ## Width of the slit between the two covers, in screen pixels.
@@ -38,8 +44,10 @@ signal slide_finished
 
 @onready var _shape: TextureRect = %Shape
 @onready var _track: Control = %Track
-@onready var _left_cover: ColorRect = %LeftCover
-@onready var _right_cover: ColorRect = %RightCover
+# Vertical mode: left and right of the slit. Horizontal mode: above and below it.
+@onready var _cover_a: ColorRect = %CoverA
+@onready var _cover_b: ColorRect = %CoverB
+@onready var _mode_button: SlitModeButton = %ModeButton
 @onready var _answer: AnswerInput = %AnswerInput
 @onready var _submit: Button = %SubmitButton
 @onready var _feedback: Label = %Feedback
@@ -63,6 +71,8 @@ func _ready() -> void:
 	_answer.text_changed.connect(_on_answer_changed)
 	_answer.submitted.connect(func(_t): submit())
 	_submit.pressed.connect(submit)
+	_mode_button.pressed.connect(toggle_mode)
+	_mode_button.mode = mode
 	_on_answer_changed("")
 	_shape.size = Vector2(shape_size, shape_size)
 	_track.resized.connect(_layout_covers)
@@ -72,32 +82,65 @@ func _ready() -> void:
 	_answer.focus_input.call_deferred()
 
 
+## Switches between the vertical and horizontal slit and restarts the slide.
+func toggle_mode() -> void:
+	if _solved:
+		return
+	set_mode(SlitMode.HORIZONTAL if mode == SlitMode.VERTICAL else SlitMode.VERTICAL)
+
+
+func set_mode(new_mode: SlitMode) -> void:
+	mode = new_mode
+	_mode_button.mode = mode
+	_layout_covers()
+	_start_slide()
+
+
 func _start_slide() -> void:
-	var y := (_track.size.y - shape_size) / 2.0
-	var start := Vector2(_track.size.x, y)   # just past the right edge
-	var end := Vector2(-shape_size, y)       # just past the left edge
+	var t := _track.size
+	var start: Vector2
+	var end: Vector2
+	if mode == SlitMode.VERTICAL:
+		var y := (t.y - shape_size) / 2.0
+		start = Vector2(t.x, y)            # just past the right edge
+		end = Vector2(-shape_size, y)      # just past the left edge
+	else:
+		var x := (t.x - shape_size) / 2.0
+		start = Vector2(x, -shape_size)    # just above the top edge
+		end = Vector2(x, t.y)              # just below the bottom edge
+	# Same speed in both modes (slide_duration is for the horizontal trip),
+	# so the shape takes equally long to pass the slit either way.
+	var speed := (t.x + shape_size) / slide_duration
 	_shape.position = start
 	if _tween:
 		_tween.kill()
 	_tween = create_tween()
-	_tween.tween_property(_shape, "position", end, slide_duration).from(start)
+	_tween.tween_property(_shape, "position", end, start.distance_to(end) / speed).from(start)
 	_tween.finished.connect(_on_slide_finished)
 
 
-## Two covers span the whole track, leaving only a vertical slit in the middle.
+## Two covers span the whole track, leaving only a thin slit through the middle.
 func _layout_covers() -> void:
 	if not is_node_ready():
 		return
-	var mid := _track.size.x / 2.0
+	var t := _track.size
 	var half := slit_width / 2.0
-	_left_cover.position = Vector2.ZERO
-	_left_cover.size = Vector2(mid - half, _track.size.y)
-	_right_cover.position = Vector2(mid + half, 0.0)
-	_right_cover.size = Vector2(_track.size.x - (mid + half), _track.size.y)
+	if mode == SlitMode.VERTICAL:
+		var mid := t.x / 2.0
+		_cover_a.position = Vector2.ZERO
+		_cover_a.size = Vector2(mid - half, t.y)
+		_cover_b.position = Vector2(mid + half, 0.0)
+		_cover_b.size = Vector2(t.x - (mid + half), t.y)
+	else:
+		var mid := t.y / 2.0
+		_cover_a.position = Vector2.ZERO
+		_cover_a.size = Vector2(t.x, mid - half)
+		_cover_b.position = Vector2(0.0, mid + half)
+		_cover_b.size = Vector2(t.x, t.y - (mid + half))
 	var c := cover_color
 	c.a = 0.6 if debug_see_through_covers else 1.0
-	_left_cover.color = c
-	_right_cover.color = c
+	_cover_a.color = c
+	_cover_b.color = c
 
 
 ## Checks the typed answer against every accepted answer for the language.
@@ -122,6 +165,7 @@ func _on_answer_changed(_t: String) -> void:
 func _on_solved() -> void:
 	_solved = true
 	_submit.disabled = true
+	_mode_button.disabled = true
 	_answer.show_result(true)
 	_feedback.text = "Correct!"
 	_feedback.modulate = _answer.correct_color
@@ -131,8 +175,8 @@ func _on_solved() -> void:
 	var center := (_track.size - _shape.size) / 2.0
 	var reveal := create_tween().set_parallel()
 	reveal.tween_property(_shape, "position", center, 0.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	reveal.tween_property(_left_cover, "modulate:a", 0.0, 0.5)
-	reveal.tween_property(_right_cover, "modulate:a", 0.0, 0.5)
+	reveal.tween_property(_cover_a, "modulate:a", 0.0, 0.5)
+	reveal.tween_property(_cover_b, "modulate:a", 0.0, 0.5)
 	var stars := GameData.stars_for_attempts(attempts)
 	if GameData.stars_enabled:
 		_stars.pop_in(stars)
