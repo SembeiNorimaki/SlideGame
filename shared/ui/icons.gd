@@ -16,3 +16,13 @@ static func draw_lock(ci: CanvasItem, center: Vector2, s: float, color: Color) -
 	ci.draw_arc(c, r, PI, TAU, 24, color, w, true)
 	ci.draw_line(c + Vector2(-r, 0), c + Vector2(-r, s * 0.05), color, w, true)
 	ci.draw_line(c + Vector2(r, 0), c + Vector2(r, s * 0.05), color, w, true)
+
+
+## Five-pointed star centered on `center` with outer radius `r`.
+static func draw_star(ci: CanvasItem, center: Vector2, r: float, color: Color) -> void:
+	var pts := PackedVector2Array()
+	for i in 10:
+		var a := deg_to_rad(-90.0 + i * 36.0)
+		var rr := r if i % 2 == 0 else r * 0.45
+		pts.append(center + Vector2(cos(a), sin(a)) * rr)
+	ci.draw_colored_polygon(pts, color)

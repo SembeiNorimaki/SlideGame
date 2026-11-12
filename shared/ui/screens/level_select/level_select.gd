@@ -30,6 +30,12 @@ signal back_requested
 		button_size = value
 		_rebuild()
 
+## Draw earned stars on completed levels (otherwise a check badge).
+@export var show_stars: bool = false:
+	set(value):
+		show_stars = value
+		_rebuild()
+
 ## Show "x / y completed" under the title.
 @export var show_progress_text: bool = true:
 	set(value):
@@ -38,6 +44,7 @@ signal back_requested
 
 var _unlocked_up_to: int = 1
 var _completed: Dictionary = {}
+var _stars: Dictionary = {}
 
 @onready var _title: Label = %Title
 @onready var _progress_label: Label = %ProgressLabel
@@ -53,18 +60,20 @@ func _ready() -> void:
 
 ## unlocked_up_to: highest playable level (1-based).
 ## completed_levels: level numbers already beaten.
-func set_progress(unlocked_up_to: int, completed_levels: Array = []) -> void:
+## stars_by_level: {level: stars} (only used when show_stars is on).
+func set_progress(unlocked_up_to: int, completed_levels: Array = [], stars_by_level: Dictionary = {}) -> void:
 	_unlocked_up_to = unlocked_up_to
 	_completed.clear()
 	for level in completed_levels:
 		_completed[int(level)] = true
+	_stars = stars_by_level
 	_rebuild()
 
 
 ## Convenience for games using the shared LevelProgress store.
 func use_progress(progress: LevelProgress) -> void:
 	level_count = progress.level_count
-	set_progress(progress.unlocked_up_to, progress.completed_levels())
+	set_progress(progress.unlocked_up_to, progress.completed_levels(), progress.stars_by_level())
 
 
 func state_of(level: int) -> LevelButton.State:
@@ -83,6 +92,8 @@ func _rebuild() -> void:
 	var focus_target: LevelButton = null
 	for level in range(1, level_count + 1):
 		var button := LevelButton.new(level, state_of(level), button_size)
+		if show_stars:
+			button.stars = _stars.get(level, 0)
 		button.pressed.connect(level_selected.emit.bind(level))
 		_grid.add_child(button)
 		# Focus the next level to play (highest unlocked, not yet completed).

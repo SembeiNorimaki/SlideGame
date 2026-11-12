@@ -1,19 +1,32 @@
-"""Generate shape images: white glyph on transparent background, centered.
-Usage: python3 tools/make_shapes.py A [B C ...]   -> assets/shapes/<letter>.png
+"""Shared image helpers for the atlas generators.
+
+Every shape is white on a transparent background, centered in a SIZE x SIZE
+cell with a PAD-pixel empty border, drawn at SS x resolution then scaled
+down for smooth edges. Letters use Inter Light; silhouettes are outlined
+with a STROKE-pixel line of about the same thickness.
 """
-import sys, os
+import os
+
 from PIL import Image, ImageDraw, ImageFont
 
-SIZE = 64           # final image size (px)
-PAD = 4             # empty border around the glyph (px)
-FONT = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
-SS = 8              # supersampling for smooth, accurate edges
+SIZE = 256        # cell size in the atlas (px) = size shown on screen
+PAD = 16          # empty border around each shape (px)
+SS = 4            # supersampling factor
+STROKE = 14       # outline thickness for silhouettes (px); Inter Light stems are ~15 px
+FONT = os.path.join(os.path.dirname(__file__), "fonts", "Inter-Light.otf")
+
+
+def to_rgba(alpha: Image.Image) -> Image.Image:
+    """SS-sized grayscale mask -> SIZE x SIZE white RGBA image."""
+    out = Image.new("RGBA", (SIZE, SIZE), (255, 255, 255, 0))
+    out.putalpha(alpha.resize((SIZE, SIZE), Image.LANCZOS))
+    return out
 
 
 def make_glyph(ch: str) -> Image.Image:
     big = SIZE * SS
     box = (SIZE - 2 * PAD) * SS
-    # Find the largest font size whose ink fits in the box.
+    # Largest font size whose ink fits in the box.
     size = box
     while True:
         font = ImageFont.truetype(FONT, size)
@@ -22,26 +35,14 @@ def make_glyph(ch: str) -> Image.Image:
             break
         size -= 4
     img = Image.new("L", (big, big), 0)
-    d = ImageDraw.Draw(img)
-    x = (big - (r - l)) / 2 - l
-    y = (big - (b - t)) / 2 - t
-    d.text((x, y), ch, font=font, fill=255)
-    alpha = img.resize((SIZE, SIZE), Image.LANCZOS)
-    out = Image.new("RGBA", (SIZE, SIZE), (255, 255, 255, 0))
-    out.putalpha(alpha)
-    return out
+    ImageDraw.Draw(img).text(((big - (r - l)) / 2 - l, (big - (b - t)) / 2 - t), ch, font=font, fill=255)
+    return to_rgba(img)
 
 
-if __name__ == "__main__":
-    os.makedirs("assets/shapes", exist_ok=True)
-    for ch in sys.argv[1:]:
-        make_glyph(ch).save(f"assets/shapes/{ch}.png")
-
-
-def make_atlas(chars: str, columns: int = 5) -> Image.Image:
-    """Cells are SIZE x SIZE, filled row by row; unused cells stay transparent."""
-    rows = -(-len(chars) // columns)
+def make_atlas(images, columns: int = 5) -> Image.Image:
+    """Pastes SIZE x SIZE images row by row; unused cells stay transparent."""
+    rows = -(-len(images) // columns)
     atlas = Image.new("RGBA", (columns * SIZE, rows * SIZE), (255, 255, 255, 0))
-    for i, ch in enumerate(chars):
-        atlas.paste(make_glyph(ch), ((i % columns) * SIZE, (i // columns) * SIZE))
+    for i, im in enumerate(images):
+        atlas.paste(im, ((i % columns) * SIZE, (i // columns) * SIZE))
     return atlas

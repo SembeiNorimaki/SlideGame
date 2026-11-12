@@ -2,13 +2,13 @@ class_name GameSet
 extends RefCounted
 ## One level set: an atlas of shapes plus its levels and the player's progress.
 
-const CELL := Vector2i(64, 64)
-
 var id: String
 var title: String
 ## Free sets are always playable; the others need the full game.
 var free: bool
 var atlas: Texture2D
+## Size of one square image in the atlas, in pixels.
+var cell_size: int = 256
 var levels: Array[LevelInfo] = []
 var progress: LevelProgress
 
@@ -19,6 +19,7 @@ static func from_dict(d: Dictionary) -> GameSet:
 	s.title = str(d.get("title", s.id))
 	s.free = d.get("free", false) == true
 	s.atlas = load(str(d.atlas))
+	s.cell_size = int(d.get("cell_size", 256))
 	s.levels = _load_levels(str(d.levels))
 	s.progress = LevelProgress.new(s.levels.size(), "user://progress_%s.json" % s.id)
 	return s
@@ -36,7 +37,7 @@ func level_count() -> int:
 func texture_for(number: int) -> AtlasTexture:
 	var tex := AtlasTexture.new()
 	tex.atlas = atlas
-	tex.region = Rect2(Vector2(level(number).atlas_coords * CELL), Vector2(CELL))
+	tex.region = Rect2(Vector2(level(number).atlas_coords * cell_size), Vector2(cell_size, cell_size))
 	return tex
 
 

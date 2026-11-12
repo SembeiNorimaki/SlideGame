@@ -1,7 +1,8 @@
 extends Control
 ## Play screen: the level's shape slides from off-screen right to off-screen left.
 
-signal completed
+## stars: 1-3 earned for this solve (based on attempts), even if stars are hidden.
+signal completed(stars: int)
 signal exited
 signal slide_finished
 
@@ -9,18 +10,17 @@ signal slide_finished
 @export var game_set_id: String = "letters"
 @export var level: int = 1
 ## Pause after a correct guess before leaving the level.
-@export var success_delay: float = 1.8
+@export var success_delay: float = 2.2
 ## Seconds the shape takes to cross the whole screen.
 ## Overridden by the difficulty chosen in Settings.
 @export var slide_duration: float = 3.0
-## On-screen size of the shape (the source image is 64x64).
+## On-screen size of the shape. Matches the atlas cell size (256) so it's drawn 1:1.
 @export var shape_size: float = 256.0
 ## Restart the slide when it leaves the screen.
 @export var loop: bool = true
 
 @export_group("Covers")
 ## Width of the slit between the two covers, in screen pixels.
-## The shape is drawn 4x (64 -> 256 px), so 4 px shows one image column.
 ## Overridden by the difficulty chosen in Settings.
 @export var slit_width: float = 4.0:
 	set(value):
@@ -43,9 +43,12 @@ signal slide_finished
 @onready var _answer: AnswerInput = %AnswerInput
 @onready var _submit: Button = %SubmitButton
 @onready var _feedback: Label = %Feedback
+@onready var _stars: StarsDisplay = %Stars
 var _tween: Tween
 var _solved := false
 var _accepted := PackedStringArray()
+## Answers submitted so far on this level (right or wrong).
+var attempts := 0
 
 
 func _ready() -> void:
@@ -101,6 +104,7 @@ func _layout_covers() -> void:
 func submit() -> void:
 	if _solved or not _answer.has_text():
 		return
+	attempts += 1
 	if AnswerMatcher.matches(_answer.get_text(), _accepted):
 		_on_solved()
 	else:
@@ -129,8 +133,11 @@ func _on_solved() -> void:
 	reveal.tween_property(_shape, "position", center, 0.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	reveal.tween_property(_left_cover, "modulate:a", 0.0, 0.5)
 	reveal.tween_property(_right_cover, "modulate:a", 0.0, 0.5)
+	var stars := GameData.stars_for_attempts(attempts)
+	if GameData.stars_enabled:
+		_stars.pop_in(stars)
 	await get_tree().create_timer(success_delay).timeout
-	completed.emit()
+	completed.emit(stars)
 
 
 func _on_slide_finished() -> void:

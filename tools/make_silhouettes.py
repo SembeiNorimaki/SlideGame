@@ -1,6 +1,8 @@
-"""Draw the "shapes" set: simple white silhouettes on transparent background.
-Each shape is drawn large, cropped to its ink, scaled to fit the cell
-(same 4px padding as the letters), then downsampled to 64x64.
+"""Draw the "shapes" set: simple white outlined shapes on transparent background.
+Each shape is drawn filled on a large canvas, cropped to its ink, scaled to
+fit the cell (same padding as the letters), turned into an outline of
+STROKE pixels (set STROKE = None in make_shapes.py for solid silhouettes),
+then downsampled to the cell size.
 
 Usage (from the project root):  python3 tools/make_silhouettes.py
 Writes assets/sets/shapes/atlas.png and game/data/sets/shapes.json.
@@ -8,12 +10,13 @@ Writes assets/sets/shapes/atlas.png and game/data/sets/shapes.json.
 import math
 import os
 
+import numpy as np
 from PIL import Image, ImageDraw
+from scipy import ndimage
 
 from levels_json import write_levels
+from make_shapes import PAD, SIZE, SS, STROKE, make_atlas, to_rgba
 
-SIZE = 64
-PAD = 4
 COLUMNS = 5
 C = 1024  # drawing canvas
 ON, OFF = 255, 0
@@ -73,8 +76,8 @@ def house(d):
     d.polygon([(512, 100), (920, 470), (104, 470)], fill=ON)
     d.rectangle((210, 460, 814, 900), fill=ON)
     d.rectangle((680, 170, 780, 380), fill=ON)  # chimney
-    d.rectangle((450, 640, 574, 900), fill=OFF)  # door
-    d.rectangle((640, 560, 740, 650), fill=OFF)  # window
+    d.rectangle((300, 600, 440, 830), fill=OFF)  # door
+    d.rectangle((560, 600, 700, 710), fill=OFF)  # window
 
 
 def arrow(d):
@@ -242,27 +245,24 @@ def render(fn) -> Image.Image:
     d._image = img
     fn(d)
     ink = img.crop(img.getbbox())
-    box = (SIZE - 2 * PAD) * 8
+    box = (SIZE - 2 * PAD) * SS
     scale = min(box / ink.width, box / ink.height)
     ink = ink.resize((max(1, round(ink.width * scale)), max(1, round(ink.height * scale))), Image.LANCZOS)
-    big = Image.new("L", (SIZE * 8, SIZE * 8), OFF)
+    big = Image.new("L", (SIZE * SS, SIZE * SS), OFF)
     big.paste(ink, ((big.width - ink.width) // 2, (big.height - ink.height) // 2))
-    alpha = big.resize((SIZE, SIZE), Image.LANCZOS)
-    out = Image.new("RGBA", (SIZE, SIZE), (255, 255, 255, 0))
-    out.putalpha(alpha)
-    return out
+    if STROKE:
+        # Keep only the band within STROKE px of an edge (outer edge and holes).
+        filled = np.array(big) > 127
+        inside = ndimage.distance_transform_edt(filled)
+        big = Image.fromarray(((filled & (inside <= STROKE * SS)) * 255).astype(np.uint8))
+    return to_rgba(big)
 
 
 def main():
-    rows = -(-len(SHAPES) // COLUMNS)
-    atlas = Image.new("RGBA", (COLUMNS * SIZE, rows * SIZE), (255, 255, 255, 0))
-    levels = []
-    for i, (fn, solution) in enumerate(SHAPES):
-        col, row = i % COLUMNS, i // COLUMNS
-        atlas.paste(render(fn), (col * SIZE, row * SIZE))
-        levels.append({"atlas_coords": [col, row], "solution": solution})
+    levels = [{"atlas_coords": [i % COLUMNS, i // COLUMNS], "solution": solution}
+              for i, (_fn, solution) in enumerate(SHAPES)]
     os.makedirs("assets/sets/shapes", exist_ok=True)
-    atlas.save("assets/sets/shapes/atlas.png")
+    make_atlas([render(fn) for fn, _ in SHAPES], columns=COLUMNS).save("assets/sets/shapes/atlas.png")
     write_levels("game/data/sets/shapes.json", levels)
 
 

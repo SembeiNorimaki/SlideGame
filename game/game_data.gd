@@ -4,6 +4,7 @@ extends Node
 ## sets are unlocked, and maps settings (language, difficulty) to game values.
 
 const SETS_PATH := "res://game/data/sets.json"
+const CONFIG_PATH := "res://game/data/config.json"
 
 ## How hard a level is. Names are translation keys.
 const DIFFICULTIES := [
@@ -18,8 +19,14 @@ var languages: Array = []
 ## In-app product id of the "full game" unlock, as created in the Play Console.
 var full_game_product_id := ""
 
+## From config.json: whether levels award stars, and how many attempts each needs.
+var stars_enabled := false
+var attempts_for_3_stars := 1
+var attempts_for_2_stars := 3
+
 
 func _ready() -> void:
+	_load_config()
 	var data = JSON.parse_string(FileAccess.get_file_as_string(SETS_PATH))
 	if not data is Dictionary or not data.get("sets") is Array:
 		push_error("Invalid or missing %s" % SETS_PATH)
@@ -31,6 +38,27 @@ func _ready() -> void:
 		sets.append(GameSet.from_dict(d))
 	if full_game_product_id != "":
 		Store.register_products([full_game_product_id])
+
+
+func _load_config() -> void:
+	var data = JSON.parse_string(FileAccess.get_file_as_string(CONFIG_PATH))
+	if not data is Dictionary:
+		push_warning("Missing or invalid %s, using defaults" % CONFIG_PATH)
+		return
+	var stars: Dictionary = data.get("stars", {})
+	stars_enabled = stars.get("enabled", false) == true
+	attempts_for_3_stars = int(stars.get("attempts_for_3_stars", attempts_for_3_stars))
+	attempts_for_2_stars = int(stars.get("attempts_for_2_stars", attempts_for_2_stars))
+
+
+## Stars for solving a level after `attempts` submitted answers (1 = first try).
+## Always at least 1: finishing a level is never worth nothing.
+func stars_for_attempts(attempts: int) -> int:
+	if attempts <= attempts_for_3_stars:
+		return 3
+	if attempts <= attempts_for_2_stars:
+		return 2
+	return 1
 
 
 func get_set(id: String) -> GameSet:

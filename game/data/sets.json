@@ -15,6 +15,7 @@
       "id": "letters",
       "title": "Letters",
       "atlas": "res://assets/sets/letters/atlas.png",
+      "cell_size": 256,
       "levels": "res://game/data/sets/letters.json",
       "free": true
     },
@@ -22,6 +23,7 @@
       "id": "shapes",
       "title": "Shapes",
       "atlas": "res://assets/sets/shapes/atlas.png",
+      "cell_size": 256,
       "levels": "res://game/data/sets/shapes.json",
       "free": false
     }

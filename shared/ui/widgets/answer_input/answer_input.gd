@@ -25,6 +25,8 @@ signal submitted(text: String)
 @onready var _field: LineEdit = %Field
 var _shake_tween: Tween
 var _placeholder: String
+## Text at the moment show_result() was called; null when there's no result showing.
+var _result_text = null
 
 
 func _ready() -> void:
@@ -57,11 +59,13 @@ func has_text() -> bool:
 
 func clear() -> void:
 	_field.text = ""
+	_result_text = null
 	_on_text_changed("")
 
 
 ## Green and locked when right; red + shake when wrong (text stays editable).
 func show_result(correct: bool) -> void:
+	_result_text = _field.text
 	if correct:
 		_set_colors(correct_color, correct_color, correct_color)
 		_field.editable = false
@@ -77,6 +81,12 @@ func show_result(correct: bool) -> void:
 
 
 func _on_text_changed(new_text: String) -> void:
+	# LineEdit reports typing at the end of the frame, so the report for the
+	# last keystroke can arrive after the answer was already checked. Ignore it
+	# while the text is still the one that was checked.
+	if _result_text != null and new_text == _result_text:
+		return
+	_result_text = null
 	_set_colors(underline_color, focus_color, text_color)  # back to normal after a wrong guess
 	text_changed.emit(new_text)
 

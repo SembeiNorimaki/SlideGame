@@ -26,7 +26,7 @@ func _ready() -> void:
 	owner = get_viewport().gui_get_focus_owner()
 	print("level 2 focus owner: ", owner.get_class() if owner else "none", " inside AnswerInput: ", owner != null and owner.owner is AnswerInput)
 	main.start_level("letters", 26)
-	main._on_level_completed("letters", 26)
+	main._on_level_completed(3, "letters", 26)
 	await get_tree().process_frame
 	print("after last level: screen = ", main._current.name)
 	GameData.reset_progress()

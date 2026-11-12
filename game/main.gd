@@ -68,6 +68,7 @@ func show_level_select(set_id: String) -> void:
 	var select: LevelSelect = LEVEL_SELECT.instantiate()
 	select.columns = 4
 	select.title = tr(game_set.title)
+	select.show_stars = GameData.stars_enabled
 	_switch_to(select)
 	select.use_progress(game_set.progress)
 	select.level_selected.connect(func(level: int): start_level(set_id, level))
@@ -104,9 +105,9 @@ func _on_new_game() -> void:
 	show_set_select()
 
 
-func _on_level_completed(set_id: String, level: int) -> void:
+func _on_level_completed(stars: int, set_id: String, level: int) -> void:
 	var game_set := GameData.get_set(set_id)
-	game_set.progress.complete_level(level)
+	game_set.progress.complete_level(level, stars)
 	if level < game_set.level_count():
 		start_level(set_id, level + 1)  # go straight on to the next level
 	else:

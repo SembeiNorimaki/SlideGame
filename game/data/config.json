@@ -1,0 +1,7 @@
+{
+  "stars": {
+    "enabled": true,
+    "attempts_for_3_stars": 1,
+    "attempts_for_2_stars": 3
+  }
+}
