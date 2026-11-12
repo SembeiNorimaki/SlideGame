@@ -6,11 +6,13 @@ extends Node
 const SETS_PATH := "res://game/data/sets.json"
 const CONFIG_PATH := "res://game/data/config.json"
 
-## How hard a level is. Names are translation keys.
+## How hard a level is, as multipliers of the play screen's slide_duration
+## and slit_width (the values set in level_play.tscn are Normal).
+## Names are translation keys.
 const DIFFICULTIES := [
-	{"id": "easy", "name": "Easy", "slide_duration": 4.5, "slit_width": 8.0},
-	{"id": "normal", "name": "Normal", "slide_duration": 3.0, "slit_width": 4.0},
-	{"id": "hard", "name": "Hard", "slide_duration": 2.0, "slit_width": 2.0},
+	{"id": "easy", "name": "Easy", "duration_scale": 1.5, "slit_scale": 2.0},
+	{"id": "normal", "name": "Normal", "duration_scale": 1.0, "slit_scale": 1.0},
+	{"id": "hard", "name": "Hard", "duration_scale": 0.67, "slit_scale": 0.5},
 ]
 
 var sets: Array[GameSet] = []
@@ -74,7 +76,7 @@ func answers(game_set: GameSet, level: int) -> PackedStringArray:
 	return game_set.level(level).answers(Settings.language)
 
 
-## Slide duration and slit width for the chosen difficulty.
+## Multipliers for the chosen difficulty (see DIFFICULTIES).
 func difficulty_params() -> Dictionary:
 	for d in DIFFICULTIES:
 		if d.id == Settings.difficulty:

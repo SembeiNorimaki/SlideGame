@@ -16,7 +16,7 @@ enum SlitMode { VERTICAL, HORIZONTAL }
 ## Pause after a correct guess before leaving the level.
 @export var success_delay: float = 2.2
 ## Seconds the shape takes to cross the whole screen.
-## Overridden by the difficulty chosen in Settings.
+## This is the Normal value; Easy and Hard scale it (see GameData.DIFFICULTIES).
 @export var slide_duration: float = 3.0
 ## On-screen size of the shape. Matches the atlas cell size (256) so it's drawn 1:1.
 @export var shape_size: float = 256.0
@@ -27,7 +27,7 @@ enum SlitMode { VERTICAL, HORIZONTAL }
 
 @export_group("Covers")
 ## Width of the slit between the two covers, in screen pixels.
-## Overridden by the difficulty chosen in Settings.
+## This is the Normal value; Easy and Hard scale it (see GameData.DIFFICULTIES).
 @export var slit_width: float = 4.0:
 	set(value):
 		slit_width = value
@@ -66,8 +66,8 @@ func _ready() -> void:
 	_shape.texture = game_set.texture_for(level)
 	_accepted = GameData.answers(game_set, level)
 	var difficulty := GameData.difficulty_params()
-	slide_duration = difficulty.slide_duration
-	slit_width = difficulty.slit_width
+	slide_duration *= difficulty.duration_scale
+	slit_width *= difficulty.slit_scale
 	_answer.text_changed.connect(_on_answer_changed)
 	_answer.submitted.connect(func(_t): submit())
 	_submit.pressed.connect(submit)

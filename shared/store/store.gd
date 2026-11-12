@@ -7,8 +7,9 @@ extends Node
 ##   running on Android. Google Play is the source of truth for ownership:
 ##   purchases are re-checked on every launch and every time the app comes back
 ##   to the foreground, and anything Google no longer reports (refunds) is revoked.
-## - DEBUG: no plugin, debug build (editor / desktop). Purchases succeed
-##   instantly so the unlock flow can be tested without the Play Store.
+## - DEBUG: no plugin, debug build (editor / desktop), USE_DEBUG_STORE on.
+##   Purchases succeed instantly so the unlock flow can be tested without
+##   the Play Store.
 ## - NONE: no plugin, release build. Nothing can be bought.
 ##
 ## Ownership is cached locally (signed per device) only so the game still
@@ -26,6 +27,9 @@ const PLUGIN_SINGLETON := "GodotGooglePlayBilling"
 const CACHE_PATH := "user://store.cfg"
 ## Change per game. Makes the local cache non-trivial to forge by hand.
 const CACHE_SALT := "slidegame-7c1e9f"
+## Set to false to disable the instant test purchases in debug builds
+## (the buy button is then hidden wherever there's no real store).
+const USE_DEBUG_STORE := true
 
 # Mirrors of BillingClient enums. The plugin's BillingClient class only exists
 # when the plugin is installed, so it's never referenced by name here.
@@ -62,7 +66,7 @@ func _ready() -> void:
 		_client.on_purchase_updated.connect(_on_purchase_updated)
 		_client.acknowledge_purchase_response.connect(_on_acknowledged)
 		_client.start_connection()
-	elif OS.is_debug_build():
+	elif OS.is_debug_build() and USE_DEBUG_STORE:
 		backend = Backend.DEBUG
 
 

@@ -63,7 +63,7 @@ func _ready() -> void:
 	main.start_level("shapes", 16)
 	var play: Control = main._current
 	await get_tree().process_frame
-	_check(play.slide_duration == 2.0 and play.slit_width == 2.0, "hard difficulty applied to play screen")
+	_check(is_equal_approx(play.slide_duration, 3.0 * 0.67) and play.slit_width == 2.0, "hard difficulty applied to play screen")
 	var field: LineEdit = play.get_node("%AnswerInput").get_node("%Field")
 	_check(get_viewport().gui_get_focus_owner() == field, "answer field focused on start")
 	play._tween.kill()
